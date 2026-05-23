@@ -14,6 +14,7 @@ type CompletedOrder = {
   items: OrderItem[]
   total: number
   time: string
+  date: string
   isPaid: boolean
 }
 
@@ -22,17 +23,85 @@ export default function SweetShopPOS() {
   // 食品菜单
 
   const foodMenu = [
+
     { name: "タロイモ西米露", price: 680 },
+
     { name: "芋丸仙草ゼリー", price: 700 },
+
     { name: "楊枝甘露", price: 680 },
+
     { name: "芋丸豆花", price: 700 },
+
     { name: "蓮の実豆花", price: 730 },
+
     { name: "黒糖仙草ゼリー", price: 700 },
+
+    {
+      name: "ミルクお餅とタロイモのスープ",
+      price: 770
+    },
+
+    {
+      name: "銀耳ココナッツミルク",
+      price: 770
+    },
+
+    {
+      name: "レモン愛玉",
+      price: 750
+    },
+
+    {
+      name: "芋丸ココナッツミルク（海南清補凉）",
+      price: 770
+    },
+
+    {
+      name: "味比べセット",
+      price: 1350
+    },
+
+    {
+      name: "タンバオ",
+      price: 600
+    },
+
+    {
+      name: "タンバオ（かに）",
+      price: 650
+    },
+
+    {
+      name: "黒胡麻モンブラン＆紫芋アイス",
+      price: 650
+    },
+
+    {
+      name: "ティラミス",
+      price: 650
+    },
+
+    {
+      name: "シフォンケーキ",
+      price: 650
+    },
+
+    {
+      name: "芋丸/タロイモ／湯円/蓮の実",
+      price: 150
+    },
+
+    {
+      name: "タピオカ/仙草ゼリー/緑豆/こんにゃく玉/マンゴー／愛玉ゼリー/カキ氷",
+      price: 100
+    },
+
   ]
 
   // 饮品菜单
 
   const drinkMenu = [
+
     {
       name: "ブレンドコーヒー",
       price: 450,
@@ -122,6 +191,7 @@ export default function SweetShopPOS() {
       price: 650,
       options: ["ICE"]
     },
+
   ]
 
   // state
@@ -135,10 +205,45 @@ export default function SweetShopPOS() {
   const [tableNumber, setTableNumber] =
     React.useState("")
 
-  // 按钮闪烁效果
+  // 按钮点击动画
 
   const [activeButton, setActiveButton] =
     React.useState("")
+
+  // localStorage 读取
+
+  React.useEffect(() => {
+
+    const savedOrders =
+      localStorage.getItem(
+        "sweetshop-orders"
+      )
+
+    if (savedOrders) {
+
+      setCompletedOrders(
+        JSON.parse(savedOrders)
+      )
+
+    }
+
+  }, [])
+
+  // 自动保存
+
+  React.useEffect(() => {
+
+    localStorage.setItem(
+
+      "sweetshop-orders",
+
+      JSON.stringify(completedOrders)
+
+    )
+
+  }, [completedOrders])
+
+  // 按钮闪绿
 
   const flashButton = (id: string) => {
 
@@ -165,20 +270,28 @@ export default function SweetShopPOS() {
       : name
 
     setCurrentOrder((prev) => [
+
       ...prev,
+
       {
         name: finalName,
         price,
         isDone: false
       }
+
     ])
+
   }
 
-  // 当前总价
+  // 当前订单总价
 
   const total = currentOrder.reduce(
-    (sum, item) => sum + item.price,
+
+    (sum, item) =>
+      sum + item.price,
+
     0
+
   )
 
   // 完成订单
@@ -186,11 +299,15 @@ export default function SweetShopPOS() {
   const completeOrder = () => {
 
     if (currentOrder.length === 0) {
+
       alert("まだ注文がありません")
+
       return
+
     }
 
     const newOrder: CompletedOrder = {
+
       id: Date.now(),
 
       tableNumber:
@@ -208,17 +325,24 @@ export default function SweetShopPOS() {
         }
       ),
 
+      date:
+        new Date().toLocaleDateString(),
+
       isPaid: false
+
     }
 
     setCompletedOrders((prev) => [
+
       newOrder,
       ...prev
+
     ])
 
     setCurrentOrder([])
 
     setTableNumber("")
+
   }
 
   return (
@@ -303,7 +427,7 @@ export default function SweetShopPOS() {
               }}
             >
               ¥{item.price}
-            </p >
+            </p>
 
             <button
               onClick={() => {
@@ -323,10 +447,15 @@ export default function SweetShopPOS() {
                     : "#e07a5f",
 
                 color: "white",
+
                 border: "none",
+
                 padding: "10px 15px",
+
                 borderRadius: "8px",
+
                 cursor: "pointer",
+
                 transition: "0.2s"
               }}
             >
@@ -376,7 +505,7 @@ export default function SweetShopPOS() {
               }}
             >
               ¥{item.price}
-            </p >
+            </p>
 
             <div
               style={{
@@ -412,10 +541,15 @@ export default function SweetShopPOS() {
                         : "#457b9d",
 
                     color: "white",
+
                     border: "none",
+
                     padding: "10px 15px",
+
                     borderRadius: "8px",
+
                     cursor: "pointer",
+
                     transition: "0.2s"
                   }}
                 >
@@ -455,26 +589,35 @@ export default function SweetShopPOS() {
               display: "flex",
               justifyContent:
                 "space-between",
+
               alignItems: "center",
+
               marginBottom: "10px",
+
               padding: "10px",
+
               background: "#f8f8f8",
+
               borderRadius: "8px"
             }}
           >
 
             <div>
-              {item.name} - ¥{item.price}
+              {item.name}
+              {" "}
+              - ¥{item.price}
             </div>
 
             <button
               onClick={() => {
 
                 setCurrentOrder((prev) =>
+
                   prev.filter(
                     (_, i) =>
                       i !== index
                   )
+
                 )
 
               }}
@@ -533,152 +676,118 @@ export default function SweetShopPOS() {
           📒 历史订单
         </h2>
 
-        {completedOrders.map((order) => (
+        {Object.entries(
 
-          <div
-            key={order.id}
-            style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "12px",
-              marginTop: "15px"
-            }}
-          >
+          completedOrders.reduce(
 
-            <h3>
-              桌号：{order.tableNumber}
-            </h3>
+            (groups, order) => {
 
-            <p>
-              时间：{order.time}
-            </p >
+              if (!groups[order.date]) {
 
-            {/* 结账按钮 */}
+                groups[order.date] = []
 
-            <button
-              onClick={() => {
+              }
 
-                const updatedOrders =
-                  completedOrders.map((o) => {
+              groups[order.date].push(order)
 
-                    if (o.id === order.id) {
+              return groups
 
-                      return {
-                        ...o,
-                        isPaid:
-                          !o.isPaid
-                      }
+            },
 
-                    }
-
-                    return o
-
-                  })
-
-                setCompletedOrders(
-                  updatedOrders
-                )
-
-              }}
-              style={{
-                background:
-                  order.isPaid
-                    ? "#2a9d8f"
-                    : "#e63946",
-
-                color: "white",
-
-                border: "none",
-
-                padding: "8px 12px",
-
-                borderRadius: "8px",
-
-                cursor: "pointer",
-
-                marginBottom: "15px"
-              }}
+            {} as Record<
+              string,
+              CompletedOrder[]
             >
 
-              {order.isPaid
-                ? "✅ 已结账"
-                : "❌ 未结账"}
+          )
 
-            </button>
+        ).map(([date, orders]) => (
 
-            {/* 菜品列表 */}
+          <div key={date}>
 
-            {order.items.map((item, itemIndex) => (
+            <h2
+              style={{
+                marginTop: "30px",
+                color: "#264653"
+              }}
+            >
+              📅 {date}
+            </h2>
+
+            {orders.map((order) => (
 
               <div
-                key={itemIndex}
+                key={order.id}
                 style={{
-                  display: "flex",
-                  justifyContent:
-                    "space-between",
-                  alignItems: "center",
-                  marginBottom: "10px",
-                  padding: "10px",
-                  background:
-                    item.isDone
-                      ? "#d8f3dc"
-                      : "#f8f8f8",
-
-                  borderRadius: "8px"
+                  background: "white",
+                  padding: "20px",
+                  borderRadius: "12px",
+                  marginTop: "15px"
                 }}
               >
 
-                <div>
+                <h3>
+                  桌号：
+                  {order.tableNumber}
+                </h3>
 
-                  {item.isDone
-                    ? "🟢 "
-                    : "🟡 "}
+                <p>
+                  时间：
+                  {order.time}
+                </p>
 
-                  {item.name}
-                  {" "}
-                  - ¥{item.price}
+                {/* 结账状态 */}
+                {/* 删除订单 */}
 
-                </div>
+<button
+  onClick={() => {
 
-                {/* 单个菜品完成按钮 */}
+    const confirmDelete = window.confirm(
+      "この注文を削除しますか？"
+    )
+
+    if (!confirmDelete) return
+
+    const updatedOrders =
+      completedOrders.filter(
+        (o) => o.id !== order.id
+      )
+
+    setCompletedOrders(updatedOrders)
+
+  }}
+  style={{
+    background: "#6c757d",
+    color: "white",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    marginBottom: "15px",
+    marginLeft: "10px"
+  }}
+>
+  🗑 删除订单
+</button>
 
                 <button
                   onClick={() => {
 
                     const updatedOrders =
+
                       completedOrders.map((o) => {
 
-                        if (o.id === order.id) {
-
-                          const updatedItems =
-                            o.items.map(
-                              (
-                                food,
-                                index
-                              ) => {
-
-                                if (
-                                  index ===
-                                  itemIndex
-                                ) {
-
-                                  return {
-                                    ...food,
-                                    isDone:
-                                      !food.isDone
-                                  }
-
-                                }
-
-                                return food
-
-                              }
-                            )
+                        if (
+                          o.id === order.id
+                        ) {
 
                           return {
+
                             ...o,
-                            items:
-                              updatedItems
+
+                            isPaid:
+                              !o.isPaid
+
                           }
 
                         }
@@ -694,40 +803,174 @@ export default function SweetShopPOS() {
                   }}
                   style={{
                     background:
-                      item.isDone
+                      order.isPaid
                         ? "#2a9d8f"
-                        : "#f4a261",
+                        : "#e63946",
 
                     color: "white",
 
                     border: "none",
 
-                    padding: "6px 12px",
+                    padding: "8px 12px",
 
-                    borderRadius: "6px",
+                    borderRadius: "8px",
 
-                    cursor: "pointer"
+                    cursor: "pointer",
+
+                    marginBottom: "15px"
                   }}
                 >
 
-                  {item.isDone
-                    ? "已完成"
-                    : "制作中"}
+                  {order.isPaid
+                    ? "✅ 已结账"
+                    : "❌ 未结账"}
 
                 </button>
+
+                {/* 菜品列表 */}
+
+                {order.items.map((
+                  item,
+                  itemIndex
+                ) => (
+
+                  <div
+                    key={itemIndex}
+                    style={{
+                      display: "flex",
+
+                      justifyContent:
+                        "space-between",
+
+                      alignItems: "center",
+
+                      marginBottom: "10px",
+
+                      padding: "10px",
+
+                      background:
+                        item.isDone
+                          ? "#d8f3dc"
+                          : "#f8f8f8",
+
+                      borderRadius: "8px"
+                    }}
+                  >
+
+                    <div>
+
+                      {item.isDone
+                        ? "🟢 "
+                        : "🟡 "}
+
+                      {item.name}
+                      {" "}
+                      - ¥{item.price}
+
+                    </div>
+
+                    <button
+                      onClick={() => {
+
+                        const updatedOrders =
+
+                          completedOrders.map((o) => {
+
+                            if (
+                              o.id === order.id
+                            ) {
+
+                              const updatedItems =
+
+                                o.items.map(
+
+                                  (
+                                    food,
+                                    index
+                                  ) => {
+
+                                    if (
+                                      index ===
+                                      itemIndex
+                                    ) {
+
+                                      return {
+
+                                        ...food,
+
+                                        isDone:
+                                          !food.isDone
+
+                                      }
+
+                                    }
+
+                                    return food
+
+                                  }
+
+                                )
+
+                              return {
+
+                                ...o,
+
+                                items:
+                                  updatedItems
+
+                              }
+
+                            }
+
+                            return o
+
+                          })
+
+                        setCompletedOrders(
+                          updatedOrders
+                        )
+
+                      }}
+                      style={{
+                        background:
+                          item.isDone
+                            ? "#2a9d8f"
+                            : "#f4a261",
+
+                        color: "white",
+
+                        border: "none",
+
+                        padding: "6px 12px",
+
+                        borderRadius: "6px",
+
+                        cursor: "pointer"
+                      }}
+                    >
+
+                      {item.isDone
+                        ? "已完成"
+                        : "制作中"}
+
+                    </button>
+
+                  </div>
+
+                ))}
+
+                <h3
+                  style={{
+                    marginTop: "10px",
+                    color: "#d1495b"
+                  }}
+                >
+                  总计：¥{order.total}
+                </h3>
 
               </div>
 
             ))}
-
-            <h3
-              style={{
-                marginTop: "10px",
-                color: "#d1495b"
-              }}
-            >
-              总计：¥{order.total}
-            </h3>
 
           </div>
 
@@ -736,5 +979,7 @@ export default function SweetShopPOS() {
       </div>
 
     </div>
+
   )
+
 }
